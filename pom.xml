@@ -1,0 +1,117 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.example</groupId>
+  <artifactId>WalmartDividend</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>WalmartDividend</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.12.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.aventstack</groupId>
+      <artifactId>extentreports</artifactId>
+      <version>5.0.9</version>
+      <exclusions>
+        <!-- extentreports leaks Lombok 1.18.12 at compile scope. It is only needed to
+             build extentreports itself (its published bytecode already contains the
+             generated accessors), but having it on our classpath makes javac run it as
+             an annotation processor, and 1.18.12 predates JDK 16+ support:
+             "IllegalAccessError: ... cannot access JavacProcessingEnvironment". -->
+        <exclusion>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>tech.grasshopper</groupId>
+      <artifactId>extentreports-cucumber7-adapter</artifactId>
+      <version>1.10.1</version>
+      <exclusions>
+        <!-- Same Lombok leak as above, via tech.grasshopper:extent-pdf-report. -->
+        <exclusion>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>4.45.0</version>
+      <scope>compile</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>6.3.4</version>
+      <scope>compile</scope>
+    </dependency>
+
+  <dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-java</artifactId>
+    <version>7.33.0</version>
+    <scope>compile</scope>
+  </dependency>
+
+  <dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-testng</artifactId>
+    <version>7.33.0</version>
+    <scope>compile</scope>
+  </dependency>
+
+    <!-- Used directly by dataReader.ExcelDataReader. It would otherwise arrive only
+         transitively (via tech.grasshopper:extent-excel-report), so an upgrade of the
+         extent adapter could silently change or drop the version we compile against.
+         Kept at compile scope because extent-excel-report needs POI at runtime too. -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>5.2.3</version>
+    </dependency>
+
+    <!-- Required by the POI pin above: poi-ooxml 5.2.3 declares commons-io 2.11.0 in
+         its pom, but its bytecode calls commons-io 2.12+ APIs (ZipHelper reaches for
+         org.apache.commons.io.function.IOIterator). Left implicit, Maven's
+         nearest-wins mediation picks POI's 2.11.0 and reading a workbook dies with
+         NoClassDefFoundError. 2.21.0 is what Selenium already requests. -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.21.0</version>
+    </dependency>
+
+  </dependencies>
+
+</project>
